@@ -3,8 +3,9 @@
 //                  for DAISO Msical Toy Piano
 //  History    : V0.0  2019-01-05 New Create(K.Ohe)
 //             : V1.0  2019-01-06 first release
+//             : V1.1  2019-01-07 tempo up test
 //=========================================================
-#define TIME_BASE 24000                 // tempo base value
+#define TIME_BASE 20000                 // tempo base value
 int tone_io[8] =                        // I/O channel 
           {2, 3, 4, 5, 6, 7, 8, 9};
 int key_control = 10;
@@ -53,11 +54,14 @@ void setup() {
 //  programable delay function
 //=========================================================
 void t_delay(int t) { 
-  int i;
-  t = t / 50;
-  for (i = 0; i < t; i++) {
-    delay(5);
-  }
+
+  delay(t);                             // change from pic mode
+
+//  int i;
+//  t = t / 50;
+//  for (i = 0; i < t; i++) {
+//    delay(5);
+//  }
 }
 
 //=========================================================
@@ -65,9 +69,9 @@ void t_delay(int t) {
 //=========================================================
 void play_tone2(int t, int n) {
   digitalWrite(tone_io[t], 1);
-  t_delay(TIME_BASE / n * 0.9);
+  t_delay(TIME_BASE / n * 0.5);         // V1.1 chenge duty to 50%
   digitalWrite(tone_io[t], 0);
-  t_delay(TIME_BASE / n * 0.1);         // make no tone for repeat tone
+  t_delay(TIME_BASE / n * 0.5);         // make no tone for repeat tone
 }
 
 void play_char2(char t, int n) {
