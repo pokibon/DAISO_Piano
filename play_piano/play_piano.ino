@@ -15,10 +15,12 @@ int len_base;                           // length (4, 8, 16, 32 ...)
 //=========================================================
 // morobitokozorite
 //=========================================================
-const char music1[] = "o5C4o4B8r16A16G4r8FE4DC4r8G8A4r8a8B4r8b8O5C2r4r8";
-const char music2[] = "o5C8C8o4BAGGr16F16E8o5C8C8o4BAGGr16F16E8";
-const char music3[] = "E8EEEE16F16G4r8F16E16D8DDD16E16F4r8";
-const char music4[] = "E16DC8o5C4o4A8G8r32F16E8F8E4D4C4r4";
+const char music1a[] = "o5C4o4B8r16A16G4r8FE4DC4r8G8A4r8a8B4r8b8O5C2r4r8";
+const char music1b[] = "o5C8C8o4BAGGr16F16E8o5C8C8o4BAGGr16F16E8";
+const char music1c[] = "E8EEEE16F16G4r8F16E16D8DDD16E16F4r8";
+const char music1d[] = "E16DC8o5C4o4A8G8r32F16E8F8E4D4C4r4";
+
+const char music2[]  = "B4GAD2R2D4ABG2R2";
 
 //=========================================================
 //  Initialize
@@ -55,7 +57,7 @@ void setup() {
 //=========================================================
 void t_delay(int t) { 
 
-  delay(t);                             // change from pic mode
+  delay(t / 10);                        // change from pic mode
 
 //  int i;
 //  t = t / 50;
@@ -146,17 +148,24 @@ void play2(char *t) {
   }
 }
 //=========================================================
-//  play music
+//  play music1
 //=========================================================
-void play_music() {
-  setup_auto_mode();                      // change port dir
+void play_music1() {
+  setup_auto_mode();                     // change port dir
   delay(1000);                           // wait 
-  play2(music1);                        // morobito
-  play2(music2);
-  play2(music3);
-  play2(music4);
+  play2(music1a);                        // morobito
+  play2(music1b);
+  play2(music1c);
+  play2(music1d);
 } 
-
+//=========================================================
+//  play music2
+//=========================================================
+void play_music2() {
+  setup_auto_mode();                     // change port dir
+  delay(1000);                           // wait 
+  play2(music2);                         // chime
+} 
 //=========================================================
 //  main loop
 //=========================================================
@@ -175,7 +184,9 @@ void loop() {
 //  Serial.println();
   if (key[7] == HIGH) {
     if (key[0] == HIGH) {
-      play_music();
+      play_music1();
+    } else if (key[1] == HIGH) {
+      play_music2();
     }
   }
 }
