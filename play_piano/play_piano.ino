@@ -1,16 +1,19 @@
 //=========================================================
 //  Play Piano : Auto and Manual Play 
 //                  for DAISO Msical Toy Piano
-//  History    : V0.0  2019-01-05 New Create(K.Ohe)
-//             : V1.0  2019-01-06 first release
-//             : V1.1  2019-01-07 tempo up test
+//  History       V0.0  2019-01-05 New Create(K.Ohe)
+//                V1.0  2019-01-06 first release
+//                V1.1  2019-01-07 tempo up test
+//                V1.2  2019-01-19 add sleep mode
 //=========================================================
+#include <avr/sleep.h>                  // support sleep mode
 #define TIME_BASE 20000                 // tempo base value
 int tone_io[8] =                        // I/O channel 
           {2, 3, 4, 5, 6, 7, 8, 9};
 int key_control = 10;
 int oct_base;                           // octave (only 4 or 5)
 int len_base;                           // length (4, 8, 16, 32 ...)
+long int  old_time;                     // stop watch
 
 //=========================================================
 // morobitokozorite
@@ -23,8 +26,16 @@ const char music1d[] = "E16DC8o5C4o4A8G8r32F16E8F8E4D4C4r4";
 const char music2[]  = "B4GAD2R2D4ABG2R2";
 
 //=========================================================
+//  wakeup : add V1.2
+//=========================================================
+void wakeup() {
+  old_time = millis();
+}
+
+//=========================================================
 //  Initialize
 //=========================================================
+
 static void setup_manual_mode() {
   int i;
 
@@ -48,8 +59,12 @@ static void setup_auto_mode() {
 
 void setup() {
 //  Serial.begin(9600);
+  set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+  attachInterrupt(0, wakeup, FALLING);  // type 'C' goto wakeup
+  attachInterrupt(1, wakeup, FALLING);  // type 'D' goto wakeup
   oct_base = 4;                         // base octave is 4 (or 5)
   len_base = 4;                         // base length is 1/4  
+  old_time = 0;                         // reset stop watch
 }
 
 //=========================================================
@@ -165,7 +180,31 @@ void play_music2() {
   setup_auto_mode();                     // change port dir
   delay(1000);                           // wait 
   play2(music2);                         // chime
-} 
+}
+
+//=========================================================
+//  sleep : add V1.2
+//=========================================================
+void sleep() {
+  sleep_mode(); 
+}
+
+//=========================================================
+//  sense_key : check keyin
+//=========================================================
+bool sense_key(int *key) {
+  int i;
+  bool hit = false;
+  for (i = 0; i < 8; i++) {
+    if(key[i] != 0) {
+      hit = true;
+      break;
+      old_time = millis();
+    }
+  } 
+  return hit;
+}
+
 //=========================================================
 //  main loop
 //=========================================================
@@ -188,5 +227,14 @@ void loop() {
     } else if (key[1] == HIGH) {
       play_music2();
     }
+  }
+ // if (sense_key(key)) {
+ //   Serial.println("key hit");;
+ // }
+  if (millis() - old_time >= 6000) {
+ //   Serial.println("goto sleep");
+    setup_manual_mode();
+    delay(100);
+    sleep();
   }
 }
